@@ -10,3 +10,5 @@
 # git rm
 # git log - list the version history of current branch
 # git show - shows the metadata and content changes of the cpecified commit
+# git branch - lists the local branches in current repository
+# git push - send the commited changes of master branch to your remote repository
