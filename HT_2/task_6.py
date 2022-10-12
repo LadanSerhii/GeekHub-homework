@@ -3,9 +3,9 @@
 # e.g. [1, 2, 'u', 'a', 4, True] --> 2 --> True
 #      [1, 2, 'u', 'a', 4, True] --> 5 --> False
 
-st = input()
+st = input('Please enter a value to check: ')
 list_1 = [1, 2, 'u', 'a', 4, True]
-for index in range(len(list_1)):
-	list_1[index] = str(list_1[index])
-print(st in list_1)
 
+for item in list_1:
+	list_1[list_1.index(item)] = str(item)
+print(f'The result of checking value in list: {st in list_1}')
