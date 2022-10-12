@@ -3,8 +3,8 @@
 # from color_list_1 which are not present in color_list_2
 
 
-color_list_1 = (input().split(','))
-color_list_2 = (input().split(','))
-for color in color_list_1:
-	if color not in color_list_2:
-		print(color)
+color_set_1 = set((input('Please input 1st color list: ').split(',')))
+color_set_2 = set((input('Please input 2nd color list: ').split(',')))
+
+final_set = color_set_1.difference(color_set_2)
+print(final_set)
