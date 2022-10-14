@@ -8,5 +8,5 @@ whitespace: ').split()
 number_1 = int(number_1)
 number_2 = int(number_2)
 for year in range(number_1, number_2 + 1):
-	if (not year % 4 or not year % 400) and year % 100:
+	if (not year % 4 and year % 100) or not year % 400:
 		print(year)

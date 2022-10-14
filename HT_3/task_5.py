@@ -8,14 +8,19 @@ dict_1 = {
 	'not dou': 'jones',
 	'USD': 36,
 	'AUD': 19.2,
-	'Tamara': 19.2
+	'Tamara': 19.2,
+	'test_1': [1],
+	'test_2': [1]
 }
 
-for item in dict_1.copy():
-	tmp_dict = dict_1.copy()
-	tmp_dict.pop(item)
-	if set(dict_1.values()) == set(tmp_dict.values()):
-		dict_1.pop(item)
+new_dict = dict()
+values = []
 
+for key, value in dict_1.items():
+	if value not in values:
+		values.append(value)
+		new_dict[key] = value
+
+dict_1 = new_dict
 print(f'Updated dictionary: {dict_1}')
 
