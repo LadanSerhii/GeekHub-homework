@@ -23,28 +23,29 @@ class NameSpaceException(Exception):
     pass
 
 
+def num_in_pass(password):
+# To have an opportunity to extend required amount of numbers in password
+    num_of_digits = 0
+    for element in password:
+        if element.isdigit():
+            num_of_digits += 1
+    return num_of_digits
+
+
 def user_validation(username, password):
-
-    def num_in_pass(password):
-        # To have an opportunity to extend required amount of numbers in password
-        num_of_digits = 0
-        for element in password:
-            if element.isdigit():
-                num_of_digits += 1
-        return num_of_digits
-
     if len(username) < 3 or len(username) > 50:
-        raise NameException
+        raise NameException('The len of mane should be 3..50 symbols!')
 
     if len(password) < 8 or not num_in_pass(password):
-        raise PassSymbolLenException
+        raise PassSymbolLenException('The pass should contain at least 1 digit and be minimum 8 symbols length')
 
     if ' ' in username:
-        raise NameSpaceException
+        raise NameSpaceException('The name should not contain whitespace!')
 
 
 user_list = [('Oz', 'Black%12'), ('Tyler', 'Aero_04'), ('Bon Jovi', 'Johny The Rocker'),\
             ('Lars Ulrich', 'Vitallica_99'), ('Kilmister', 'Motor_Head_66')]
+
 
 for element in user_list:
     print(f'Name: {element[0]}')
@@ -52,10 +53,9 @@ for element in user_list:
     try:
         user_validation(element[0], element[1])
         print('Status: OK\n')
-    except NameException:
-        print('Status: The len of mane should be 3..50 symbols!\n')
-    except PassSymbolLenException:
-        print('Status: The pass should contain at least 1 digit and be minimum 8 symbols length!\n')
-    except NameSpaceException:
-        print('Status: The name should not contain whitespace!\n')
-
+    except NameException as e:
+        print(f'Status: {str(e)}\n')
+    except PassSymbolLenException as e:
+        print(f'Status: {str(e)}\n')
+    except NameSpaceException as e:
+        print(f'Status: {str(e)}\n')

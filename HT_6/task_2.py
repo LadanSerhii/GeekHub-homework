@@ -18,16 +18,16 @@ class NameSpaceException(Exception):
     pass
 
 
+def num_in_pass(password):
+# To have an opportunity to extend required amount of numbers in password
+    num_of_digits = 0
+    for element in password:
+        if element.isdigit():
+            num_of_digits += 1
+    return num_of_digits
+
+
 def user_validation(username, password):
-
-    def num_in_pass(password):
-        # To have an opportunity to extend required amount of numbers in password
-        num_of_digits = 0
-        for element in password:
-            if element.isdigit():
-                num_of_digits += 1
-        return num_of_digits
-
     if len(username) < 3 or len(username) > 50:
         raise NameException
 
@@ -39,7 +39,7 @@ def user_validation(username, password):
 
 
 try:
-    user_validation('Ozfdrdd', 'A')
+    user_validation('O', 'A')
 except NameException:
     print('NameException')
 except PassSymbolLenException:

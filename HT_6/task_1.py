@@ -15,17 +15,14 @@ class LoginException(Exception):
 def user_ident(username, password, silent=False):
     user_list = [('Osborne', 'Black%12'), ('Tyler', 'Aero_04'), ('Bon Jovi', 'Johny The Rocker'), \
                  ('Ulrich', 'Vitallica'), ('Kilmister', 'Motor')]
-    usr_tuple = tuple([username, password])
-    try:
-        if usr_tuple in user_list:
+    usr_tuple = (username, password)
+    if usr_tuple in user_list:
+        return True
+    else:
+        if not silent:
             return True
         else:
-            if not silent:
-                return True
-            else:
-                raise LoginException
-    except LoginException:
-        print('Custom exception raised!')
+            raise LoginException('Custom exception')
 
 
-print(user_ident('Osborne', 'Black%12', True))
+print(user_ident('Osbo rne', 'Black%12', True))
