@@ -29,20 +29,10 @@ def num_in_pass(password):
 
 def user_validation(username, password):
     if len(username) < 3 or len(username) > 50:
-        raise NameException
+        raise NameException('The len of mane should be 3..50 symbols!')
 
     if len(password) < 8 or not num_in_pass(password):
-        raise PassSymbolLenException
+        raise PassSymbolLenException('The pass should contain at least 1 digit and be minimum 8 symbols length')
 
     if ' ' in username:
-        raise NameSpaceException
-
-
-try:
-    user_validation('O', 'A')
-except NameException:
-    print('NameException')
-except PassSymbolLenException:
-    print('PassSymbolLenException')
-except NameSpaceException:
-    print('NameSpaceException')
+        raise NameSpaceException('The name should not contain whitespace!')
