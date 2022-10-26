@@ -13,7 +13,22 @@
 #    P.P.P.S Не забудьте обробляти невалідні ситуації (типу range(1, -10, 5) тощо).
 #    Подивіться як веде себе стандартний range в таких випадках.
 
-def new_range(start, finish, step=1):
+def new_range(*args):
+    if len(args) == 1:
+        start = 0
+        finish = args[0]
+        step = 1
+    elif len(args) == 2:
+        start = args[0]
+        finish = args[1]
+        step = 1
+    elif len(args) == 3:
+        start = args[0]
+        finish = args[1]
+        step = args[2]
+    else:
+        raise Exception('The number of args should be 1 to 3!')
+
     if step > 0:
         value = start
         while value < finish:
@@ -26,6 +41,14 @@ def new_range(start, finish, step=1):
             value += step
 
 
-print(list(new_range(1, -10, 5)))
-print(list(range(1, -10, 5)))
-
+try:
+    print(list(new_range(10)))
+    print(list(range(10)))
+    print(list(new_range(10, 15)))
+    print(list(range(10, 15)))
+    print(list(new_range(10, 15, 2)))
+    print(list(range(10, 15, 2)))
+    print(list(new_range(1, 1, 1, 1)))
+    print(list(new_range()))
+except Exception as e:
+    print(e)
