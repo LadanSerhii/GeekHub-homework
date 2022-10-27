@@ -3,6 +3,6 @@
 #    Результат: [5, 10, 20, 25, 35, 40, 50, 55, 65, 70, 80, 85, 95]
 
 
-gen = [i * 5 for i in range(20) if i % 3]
+gen = [i for i in range(100) if not i % 5 and i % 3]
 
 print(gen)
