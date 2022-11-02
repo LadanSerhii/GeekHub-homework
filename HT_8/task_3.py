@@ -33,7 +33,7 @@ from datetime import datetime
 
 
 def check_pass(username, password):
-    with open('users.csv') as file:
+    with open('users.CSV') as file:
         reader = csv.reader(file)
         for row in reader:
             if row[0] == username and row[1] == password:
@@ -42,19 +42,38 @@ def check_pass(username, password):
 
 
 def check_balance(username):
-    filename = username + '_balance.txt'
+    filename = username + '_balance.TXT'
     with open(filename, 'r') as file:
-        balance = float(file.read())
+        balance = int(file.read())
         return balance
 
 
-def change_balance(username, change_amount):
-    filename = username + '_balance.txt'
+def withdraw_balance(username, change_amount):
+    filename = username + '_balance.TXT'
     with open(filename, 'r') as file:
-        balance = float(file.read())
-    with open(filename, 'w') as file:
-        file.write(str(balance + change_amount))
-    transaction(username, change_amount)
+        balance = int(file.read())
+    if change_amount < 0:
+        print("You could not withdraw negative value!")
+    elif change_amount <= balance:
+        with open(filename, 'w') as file:
+            file.write(str(balance - change_amount))
+        transaction(username, change_amount)
+        print(f'Please take your ${change_amount} from the bin!')
+    else:
+        print("You have not enough of money!")
+
+
+def add_balance(username, change_amount):
+    filename = username + '_balance.TXT'
+    with open(filename, 'r') as file:
+        balance = int(file.read())
+    if change_amount < 0:
+        print("You could not add negative value!")
+    else:
+        with open(filename, 'w') as file:
+            file.write(str(balance + change_amount))
+        transaction(username, change_amount)
+        print(f'The ${change_amount} successfully added to your account!')
 
 
 def transaction(username, amount):
@@ -96,19 +115,17 @@ def workflow(username):
             amount = input('Please enter the amount of money to add:')
             try:
                 change_amount = int(amount)
-                change_balance(username, change_amount)
-                print(f'The ${amount} successfully added to your account!')
+                add_balance(username, change_amount)
             except ValueError:
                 print('Wrong value entered!')
         elif command == 3:
             amount = input('Please enter the amount of money to withdraw:')
             try:
-                change_amount = - int(amount)
-                change_balance(username, change_amount)
-                print(f'Please take your ${amount} from the bin!')
+                change_amount = int(amount)
+                withdraw_balance(username, change_amount)
             except ValueError:
                 print('Wrong value entered!')
-                change_balance(username, change_amount)
+                withdraw_balance(username, change_amount)
         elif command == 4:
             print_transactions(username)
         elif command == 0:
