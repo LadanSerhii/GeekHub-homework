@@ -33,7 +33,7 @@ from datetime import datetime
 
 
 def check_pass(username, password):
-    with open('users.CSV') as file:
+    with open('users.csv') as file:
         reader = csv.reader(file)
         for row in reader:
             if row[0] == username and row[1] == password:
@@ -42,14 +42,14 @@ def check_pass(username, password):
 
 
 def check_balance(username):
-    filename = username + '_balance.TXT'
+    filename = username + '_balance.txt'
     with open(filename, 'r') as file:
         balance = int(file.read())
         return balance
 
 
 def withdraw_balance(username, change_amount):
-    filename = username + '_balance.TXT'
+    filename = username + '_balance.txt'
     with open(filename, 'r') as file:
         balance = int(file.read())
     if change_amount < 0:
@@ -64,7 +64,7 @@ def withdraw_balance(username, change_amount):
 
 
 def add_balance(username, change_amount):
-    filename = username + '_balance.TXT'
+    filename = username + '_balance.txt'
     with open(filename, 'r') as file:
         balance = int(file.read())
     if change_amount < 0:
@@ -77,7 +77,7 @@ def add_balance(username, change_amount):
 
 
 def transaction(username, amount):
-    filename = username + '_transactions.JSON'
+    filename = username + '_transactions.json'
     tm = datetime.now()
     with open(filename, 'r') as file:
         data = json.load(file)
@@ -87,7 +87,7 @@ def transaction(username, amount):
 
 
 def print_transactions(username):
-    filename = username + '_transactions.JSON'
+    filename = username + '_transactions.json'
     with open(filename, 'r') as file:
         data = json.load(file)
         print(f'Transaction history by date for {username}:')
