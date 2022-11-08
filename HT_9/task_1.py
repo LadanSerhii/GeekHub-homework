@@ -179,12 +179,9 @@ def add_balance(username, change_amount):
 def transaction(username, amount):
     conn = sqlite3.connect('atm.db')
     cursor = conn.cursor()
-    cursor.execute('''SELECT ID FROM TRANSACTIONS ORDER BY ID DESC''')
-    last_row = cursor.fetchone()
-    new_id = last_row[0] + 1
     tm = datetime.now()
-    cursor.execute('''INSERT INTO TRANSACTIONS (ID, NAME, TIME, BALANCE) VALUES(?, ?, ?, ?)''',
-                   (new_id, username, tm, amount))
+    cursor.execute('''INSERT INTO TRANSACTIONS (NAME, TIME, BALANCE) VALUES(?, ?, ?)''',
+                   (username, tm, amount))
     conn.commit()
     conn.close()
 
