@@ -89,10 +89,11 @@ def get_password(username):
 
 
 def check_pass(username, password):
-    if get_password(username):
-        if get_password(username)[0] == password and get_password(username)[1] != "TRUE":
+    user_pass = get_password(username)
+    if user_pass:
+        if user_pass[0] == password and user_pass[1] != "TRUE":
             return True
-        elif get_password(username)[0] == password and get_password(username)[1] == "TRUE":
+        elif user_pass[0] == password and user_pass[1] == "TRUE":
             print('Please login in service mode!')
             return False
     else:
@@ -100,10 +101,11 @@ def check_pass(username, password):
 
 
 def check_service(username, password):
-    if get_password(username):
-        if get_password(username)[0] == password and get_password(username)[1] == "TRUE":
+    user_pass = get_password(username)
+    if user_pass:
+        if user_pass[0] == password and user_pass[1] == "TRUE":
             return True
-        elif get_password(username)[0] == password and get_password(username)[1] != "TRUE":
+        elif user_pass[0] == password and user_pass[1] != "TRUE":
             print('You have not service permissions!')
             return False
     else:
