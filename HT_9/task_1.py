@@ -57,17 +57,14 @@ def create_user():
         user_validation(username, password)
         conn = sqlite3.connect('atm.db')
         cursor = conn.cursor()
-        cursor.execute('''SELECT ID FROM USERS ORDER BY ID DESC''')
-        last_row = cursor.fetchone()
-        new_id = last_row[0] + 1
         cursor.execute('''SELECT NAME FROM USERS''')
         names = cursor.fetchall()
         name_list = []
         for name in names:
             name_list.append(name[0])
         if username not in name_list:
-            cursor.execute('''INSERT INTO USERS (ID, NAME, PASSWORD, BALANCE) VALUES(?, ?, ?, ?)''',
-                           (new_id, username, password, 0))
+            cursor.execute('''INSERT INTO USERS (NAME, PASSWORD, BALANCE, SERVICE) VALUES(?, ?, ?, ?)''',
+                           (username, password, 0, 'FALSE'))
             conn.commit()
             print(f'The username "{username}" created!')
             user_workflow(username)
@@ -80,36 +77,37 @@ def create_user():
         print(e)
 
 
-def check_pass(username, password):
+def get_password(username):
     conn = sqlite3.connect('atm.db')
     cursor = conn.cursor()
-    cursor.execute('''SELECT * FROM USERS''')
-    data = cursor.fetchall()
-    for el in data:
-        if el[1] == username and el[2] == password:
-            if el[4] == "TRUE":
-                print('Please login in service mode!')
-                return False
-            else:
-                return True
-    return False
-    conn.close()
+    cursor.execute('''SELECT * FROM USERS WHERE NAME=?''', (username, ))
+    data = cursor.fetchone()
+    try:
+        return [data[2], data[4]]
+    except Exception:
+        return False
+
+
+def check_pass(username, password):
+    if get_password(username):
+        if get_password(username)[0] == password and get_password(username)[1] != "TRUE":
+            return True
+        elif get_password(username)[0] == password and get_password(username)[1] == "TRUE":
+            print('Please login in service mode!')
+            return False
+    else:
+        return False
 
 
 def check_service(username, password):
-    conn = sqlite3.connect('atm.db')
-    cursor = conn.cursor()
-    cursor.execute('''SELECT * FROM USERS''')
-    data = cursor.fetchall()
-    for el in data:
-        if el[1] == username and el[2] == password:
-            if el[4] == "TRUE":
-                return True
-            else:
-                print('You have not service permissions!')
-                return False
-    return False
-    conn.close()
+    if get_password(username):
+        if get_password(username)[0] == password and get_password(username)[1] == "TRUE":
+            return True
+        elif get_password(username)[0] == password and get_password(username)[1] != "TRUE":
+            print('You have not service permissions!')
+            return False
+    else:
+        return False
 
 
 def check_balance(username):
@@ -118,7 +116,6 @@ def check_balance(username):
     cursor.execute('''SELECT BALANCE FROM USERS WHERE NAME=?''', (username, ))
     data = cursor.fetchone()
     return data[0]
-    conn.close()
 
 
 def withdraw_balance(username, change_amount):
@@ -201,19 +198,9 @@ def print_transactions(username):
         print(f'{row[2]} -> {row[3]}')
 
 
-def menu():
-    print('|| Check balance: enter "1" || Add money: enter "2" || Withdraw money: enter "3" || '
-          'Check transaction history: enter "4" || Exit: enter "0" ||')
-    try:
-        command = int(input('Please enter the command:'))
-        return command
-    except ValueError:
-        print("Please enter correct menu number!")
-
-
 def workflow():
     active = True
-    while(active):
+    while active:
         command = menu()
         if command == 1:
             start_user()
@@ -230,7 +217,7 @@ def workflow():
 
 def user_workflow(username):
     active = True
-    while (active):
+    while active:
         command = user_menu()
         if command == 1:
             print(f'Dear {username}, you have ${check_balance(username)} on your account!')
@@ -248,7 +235,6 @@ def user_workflow(username):
                 withdraw_balance(username, change_amount)
             except ValueError:
                 print('Wrong value entered!')
-                withdraw_balance(username, change_amount)
         elif command == 4:
             print_transactions(username)
         elif command == 0:
@@ -258,9 +244,9 @@ def user_workflow(username):
             print('Please enter correct menu number!')
 
 
-def service_workflow(username):
+def service_workflow():
     active = True
-    while (active):
+    while active:
         command = service_menu()
         if command == 1:
             atm_balance()
@@ -314,7 +300,7 @@ def start_service():
     username = input('Please enter username: ')
     password = input('Please enter password: ')
     if check_service(username, password):
-        service_workflow(username)
+        service_workflow()
     else:
         print("Wrong username and/or password!")
 
@@ -360,3 +346,4 @@ def atm_add():
 
 
 start()
+
