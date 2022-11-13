@@ -397,107 +397,63 @@ def atm_nominals(atm_bal):
     return nominals
 
 
-def check_iteration(amount, nominal, nominal_number):
-    if amount // nominal <= nominal_number:
-        return [amount // nominal, True]
+def possibility_of_withdraw(amount, pos_amount):
+    amount_list = []
+    for el in pos_amount:
+        amount_list.append(el[0])
+    if amount in amount_list:
+        return True
     else:
-        return [nominal_number, False]
-
-
-def optimal_combination(amount, combination, atm_bal):
-    nominals = reduce_nominals(amount, atm_nominals(atm_bal))
-    rest_bal = atm_bal
-
-    while len(nominals) > 1:
-        active_nominal = max(nominals)
-        atm_nominal_number = rest_bal[active_nominal]
-        required_nominal_number = amount // active_nominal
-        while required_nominal_number > atm_nominal_number and required_nominal_number >= 0:
-            required_nominal_number -= 1
-        rest = amount - required_nominal_number * active_nominal
-        combination[active_nominal] += required_nominal_number
-        rest_bal[active_nominal] = atm_nominal_number - required_nominal_number
-        nominals.pop()
-        amount = rest
-
-    if len(nominals) == 1:
-        active_nominal = max(nominals)
-        atm_nominal_number = rest_bal[active_nominal]
-        delta = check_iteration(rest, active_nominal, rest_bal[active_nominal])[0]
-        rest -= delta * active_nominal
-        combination[active_nominal] = delta
-        rest_bal[active_nominal] = atm_nominal_number - delta
-    return [rest, combination, atm_bal]
-
-
-def delta_bal(atm_bal, combination):
-    rest_bal = {}
-    keys = list(atm_bal.keys())
-    for key in keys:
-        rest_bal[key] = atm_bal[key] - combination[key]
-    return rest_bal
-
-
-def second_combination(rest, combination, atm_bal):
-
-    nominals = reduce_nominals_second(rest, atm_nominals(atm_bal))
-    rest_bal = atm_bal
-    #print(f'Amount {amount} on the beginning of second comb.')
-
-    while len(nominals) >= 1:
-        active_nominal = max(nominals)
-        atm_nominal_number = rest_bal[active_nominal]
-        required_nominal_number = rest // active_nominal
-        while required_nominal_number > atm_nominal_number and required_nominal_number >= 0:
-            required_nominal_number -= 1
-        #print(f'Amount {amount} on while of second comb.')
-        rest = rest - required_nominal_number * active_nominal
-        combination[active_nominal] += required_nominal_number
-        rest_bal[active_nominal] = atm_nominal_number - required_nominal_number
-        nominals.pop()
-
-    return [rest, combination, atm_bal]
-
-
-def rest_list(combination):
-    r_list = []
-    for key in combination:
-        for val in range(0, combination[key] + 1):
-            if val * key not in r_list:
-                r_list.append(val * key)
-    comb = list(combinations(r_list, 2))
-    val_list = []
-    for el in comb:
-        if el not in val_list:
-            val_list.append(el[0] + el[1])
-    val_list.sort()
-    val_list = list(dict.fromkeys(val_list))
-    return val_list
-
-
-def withdraw(amount):
-    atm_bal = {}
-    conn = sqlite3.connect('atm.db')
-    cursor = conn.cursor()
-    cursor.execute('''SELECT NOMINAL, QUANTITY FROM ATMBALANCE''')
-    data = cursor.fetchall()
-    for el in data:
-        atm_bal[el[0]] = el[1]
-
-    combination = {10: 0, 20: 0, 50: 0, 100: 0, 200: 0, 500: 0, 1000: 0}
-    rest, combination, atm_bal = optimal_combination(amount, combination, atm_bal)
-    if rest == 0:
-        print(f'Please take your:')
-        for key in combination:
-            if combination[key] != 0:
-                print(f'{combination[key]} * ${key}')
-                cursor.execute('''UPDATE ATMBALANCE SET QUANTITY=? WHERE NOMINAL=?''', (atm_bal[key] - combination[key], key, ))
-                conn.commit()
-                print(atm_bal)
-    else:
-        print(f'The sum could not be given!')
         return False
 
 
-start()
+def withdraw(amount):
+    conn = sqlite3.connect('atm.db')
+    cursor = conn.cursor()
+    cursor.execute('''SELECT NOMINAL, QUANTITY FROM ATMBALANCE''')
+    atm_bal = cursor.fetchall()
+    #atm_bal = [(10, 5), (20, 1), (50, 1), (100, 0), (200, 4), (500, 1), (1000, 5)]
+    banknote_list = []
+    for el in atm_bal:
+        for index in range(el[1]):
+            banknote_list.append(el[0])
+    banknote_list.reverse()
+    banknote_list.sort()
+    pos_amount = [(0, 0)]
+    for elem in banknote_list:
+        tmp_pos_amount = []
+        for el in pos_amount:
+            tmp = (el[0] + elem, elem)
+            tmp_pos_amount.append(tmp)
+        for el in tmp_pos_amount:
+            if el[0] <= amount and el not in pos_amount:
+                pos_amount.append(el)
+        pos_amount.sort()
+        pos_amount.reverse()
+    if possibility_of_withdraw(amount, pos_amount):
+        combination = []
+        while amount != 0:
+            for el in pos_amount:
+                if el[0] == amount:
+                    combination.append(el[1])
+                    amount -= el[1]
+        combination_dict = {}
+        for el in combination:
+            if el != 0:
+                if el not in combination_dict.keys():
+                    combination_dict[el] = combination.count(el)
+        atm_bal_dict = {}
+        for el in atm_bal:
+            atm_bal_dict[el[0]] = el[1]
+        print(f'Please take your:')
+        for key in combination_dict:
+            if combination_dict[key] != 0:
+                print(f'{combination_dict[key]} * ${key}')
+                cursor.execute('''UPDATE ATMBALANCE SET QUANTITY=? WHERE NOMINAL=?''',
+                               (atm_bal_dict[key] - combination_dict[key], key,))
+                conn.commit()
+    else:
+        print(f'The amount could not be given with the existing nominals!')
 
+
+start()
