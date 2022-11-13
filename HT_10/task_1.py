@@ -27,11 +27,10 @@
 
 import sqlite3
 from datetime import datetime
-from itertools import combinations
 
 
 class NameException(Exception):
-    ...
+    pass
 
 
 class PassSymbolLenException(Exception):
@@ -143,12 +142,7 @@ def withdraw_balance(username, change_amount):
     elif change_amount > balance:
         print("You have not enough of money on your account!")
     else:
-        if not withdraw(change_amount):
-            cursor.execute('''UPDATE USERS SET BALANCE=? WHERE NAME=?''', (balance - change_amount, username, ))
-            conn.commit()
-            transaction(username, -change_amount)
-            print(f'Please take your ${change_amount} from the bin!')
-    conn.close()
+        withdraw(username, change_amount)
 
 
 def add_balance(username, change_amount):
@@ -351,7 +345,6 @@ def atm_add(username):
     nominals = []
     cursor.execute('''SELECT QUANTITY FROM ATMBALANCE WHERE NOMINAL=?''', (banknote_nominal,))
     amount = cursor.fetchone()
-    amount_for_transaction = 0
     for element in data:
         nominals.append(element[0])
     if banknote_nominal not in nominals:
@@ -407,12 +400,13 @@ def possibility_of_withdraw(amount, pos_amount):
         return False
 
 
-def withdraw(amount):
+def withdraw(username, amount):
     conn = sqlite3.connect('atm.db')
     cursor = conn.cursor()
     cursor.execute('''SELECT NOMINAL, QUANTITY FROM ATMBALANCE''')
     atm_bal = cursor.fetchall()
     #atm_bal = [(10, 5), (20, 1), (50, 1), (100, 0), (200, 4), (500, 1), (1000, 5)]
+    delta = amount
     banknote_list = []
     for el in atm_bal:
         for index in range(el[1]):
@@ -451,7 +445,12 @@ def withdraw(amount):
                 print(f'{combination_dict[key]} * ${key}')
                 cursor.execute('''UPDATE ATMBALANCE SET QUANTITY=? WHERE NOMINAL=?''',
                                (atm_bal_dict[key] - combination_dict[key], key,))
+                cursor.execute('''SELECT BALANCE FROM USERS WHERE NAME=?''', (username, ))
+                balance = cursor.fetchone()
+                cursor.execute('''UPDATE USERS SET BALANCE=? WHERE NAME=?''',
+                               (balance[0] - delta, username,))
                 conn.commit()
+                transaction(username, delta)
     else:
         print(f'The amount could not be given with the existing nominals!')
 
