@@ -23,16 +23,19 @@ class Calc(object):
         """ADD function"""
         self.last_result = self.tmp_result
         self.tmp_result = num_1 + num_2
+        return self.tmp_result
 
     def minus(self, num_1, num_2):
         """MINUS function"""
         self.last_result = self.tmp_result
         self.tmp_result = num_1 - num_2
+        return self.tmp_result
 
     def mult(self, num_1, num_2):
         """MULTIPLICATION function"""
         self.last_result = self.tmp_result
         self.tmp_result = num_1 * num_2
+        return self.tmp_result
 
     def div(self, num_1, num_2):
         """DIVISION function"""
@@ -41,6 +44,7 @@ class Calc(object):
             self.tmp_result = num_1 / num_2
         else:
             self.tmp_result = None
+        return self.tmp_result
 
 
 calc = Calc()
@@ -59,5 +63,3 @@ calc.div(4, 2)
 print(calc.last_result)
 calc.plus(4, 2)
 print(calc.last_result)
-
-help(calc)

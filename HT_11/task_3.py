@@ -268,15 +268,19 @@ def create_user():
             cursor.execute('''INSERT INTO USERS (NAME, PASSWORD, BALANCE, SERVICE) VALUES(?, ?, ?, ?)''',
                             (username, password, 0, 'FALSE'))
             conn.commit()
-            number = input(f'You have an opportunity of 10% to get the BONUS! Please enter a number from 0 to 9: ')
+            number = int(input(f'You have an opportunity of 10% to get the BONUS! Please enter a number from 0 to 9: '))
             rnd = random.randint(0, 9)
             if number == rnd:
                 print(f'Match! {number} is equal to {rnd}!You have a bonus of $1000 on your account!')
+                active_user = User(username, password)
+                active_user.add_balance(1000)
+                print(f'The username "{username}" created!')
+                user_workflow(active_user)
             else:
                 print(f'Sorry, {number} is not equal to {rnd}! You have no bonus!')
-            active_user = User(username, password)
-            print(f'The username "{username}" created!')
-            user_workflow(active_user)
+                active_user = User(username, password)
+                print(f'The username "{username}" created!')
+                user_workflow(active_user)
         else:
             print(f'The username "{username}" is already exist!')
         conn.close()
@@ -455,5 +459,5 @@ def atm_nominals(atm_bal):
         nominals.append(nominal)
     return nominals
 
-print(help(User))
+
 start()
