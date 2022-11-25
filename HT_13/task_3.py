@@ -21,12 +21,12 @@ class Transaction(object):
 
     @property
     def amount(self):
-        print('Amount getter')
+        # print('Amount getter')
         return self._amount
 
     @amount.setter
     def amount(self, value):
-        print('Amount setter')
+        # print('Amount setter')
         self._amount = float(value)
 
     @property
@@ -43,17 +43,17 @@ class Transaction(object):
 
     @property
     def description(self):
-        if self._description == None:
-            return 'No description provied'
+        if not self._description:
+            return 'No description provided'
         else:
             return self._description
 
     @property
     def usd(self):
-        if self._currency == 'USD':
-            return self._amount
+        if self.currency == 'USD':
+            return self.amount
         else:
-            return self._amount * self._usd_conversation_rate
+            return self.amount * self.usd_conversation_rate
 
 
 trn = Transaction(1500, '22-12-2000', 'UAH', 37.9, 'Crazy rate!')
