@@ -4,6 +4,8 @@
 
 from functools import total_ordering
 
+
+@total_ordering
 class Car(object):
 
     def __init__(self, year):
@@ -12,28 +14,25 @@ class Car(object):
     def __sub__(self, other):
         return self.year - other.year
 
-    @total_ordering
     def __eq__(self, other):
         if self.year == other.year:
             return True
         else:
             return False
 
-    @total_ordering
     def __le__(self, other):
         if self.year >= other.year:
             return True
         else:
             return False
 
-    @total_ordering
+'''
     def __lt__(self, other):
         if self.year > other.year:
             return True
         else:
             return False
 
-'''
     def __gt__(self, other):
         if self.year < other.year:
             return True

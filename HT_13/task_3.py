@@ -29,8 +29,6 @@ class Transaction(object):
         print('Amount setter')
         self._amount = float(value)
 
-
-
     @property
     def date(self):
         return self._date
@@ -52,11 +50,13 @@ class Transaction(object):
 
     @property
     def usd(self):
-        return self._amount * self._usd_conversation_rate
+        if self._currency == 'USD':
+            return self._amount
+        else:
+            return self._amount * self._usd_conversation_rate
 
 
 trn = Transaction(1500, '22-12-2000', 'UAH', 37.9, 'Crazy rate!')
-
 print(trn.amount)
 print(trn.date)
 print(trn.currency)
@@ -65,3 +65,11 @@ print(trn.description)
 trn.amount = 1000
 print(trn.usd)
 
+trn = Transaction(1500, '25-12-2000')
+print(trn.amount)
+print(trn.date)
+print(trn.currency)
+print(trn.usd_conversation_rate)
+print(trn.description)
+trn.amount = 1000
+print(trn.usd)
