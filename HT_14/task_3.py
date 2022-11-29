@@ -30,7 +30,6 @@ class SiteParser(object):
         page = requests.get(self.BASE_URL)
         soup = BeautifulSoup(page.content, 'lxml')
         results = self.page_parse(soup)
-        next_index = soup.select_one('.next').text
         for page_number in range(2, 11):
             print(f'=== Parsing on the page {page_number} ===')
             page = requests.get(self.BASE_URL + '/page/' + str(page_number) + '/')
@@ -54,7 +53,7 @@ class SiteParser(object):
         tg = quote_soup.select('.tag')
         tags = ''
         for tag in tg:
-            tags += (tag.text) + ', '
+            tags += tag.text + ', '
         # print(quote)
         # print(author)
         # print(tags)
