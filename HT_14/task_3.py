@@ -26,23 +26,16 @@ class SiteParser(object):
     QUOTE_FIELDS = [field.name for field in fields(Quote)]
 
     def site_parse(self) -> [Quote]:
+        print(f'=== Parsing on the page 1 ===')
         page = requests.get(self.BASE_URL)
         soup = BeautifulSoup(page.content, 'lxml')
-        soup.prettify()
         results = self.page_parse(soup)
         next_index = soup.select_one('.next').text
-        page_number = 2
-        try:
-            while 'Next ' in next_index:
-                print(f'=== Parsing on the page {page_number} ===')
-                page = requests.get(self.BASE_URL + '/page/' + str(page_number) + '/')
-                soup = BeautifulSoup(page.content, 'lxml')
-                soup.prettify()
-                results.extend(self.page_parse(soup))
-                page_number += 1
-                next_index = soup.select_one('.next').text
-        except AttributeError:
-            print('=== Finish ===')
+        for page_number in range(2, 11):
+            print(f'=== Parsing on the page {page_number} ===')
+            page = requests.get(self.BASE_URL + '/page/' + str(page_number) + '/')
+            soup = BeautifulSoup(page.content, 'lxml')
+            results.extend(self.page_parse(soup))
         return results
 
     def page_parse(self, soup) -> [Quote]:
@@ -76,7 +69,6 @@ class SiteParser(object):
     def author_description_parse(self, author_url):
         page = requests.get(self.BASE_URL + author_url)
         soup_author = BeautifulSoup(page.content, 'lxml')
-        soup_author.prettify()
         author_description = soup_author.select_one('.author-description').text.replace("    ", "").replace('\n', '')
         return author_description
 
@@ -91,7 +83,6 @@ class SiteParser(object):
     def print_results(self, results: [Quote]):
         for result in results:
             print(astuple(result))
-
 
 
 if __name__ == '__main__':

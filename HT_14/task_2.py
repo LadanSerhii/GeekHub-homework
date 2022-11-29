@@ -5,6 +5,7 @@
 # - не забудьте перевірку на валідність введених даних
 
 import requests
+from requests.exceptions import HTTPError
 from bs4 import BeautifulSoup
 import json
 import urllib
@@ -19,10 +20,14 @@ class SiteRequest(object):
 
     def create_curr_list(self):
         today = str(datetime.now().date()).replace('-', '')
-        response = urllib.request.urlopen(self.FOR_CURR_LIST.replace('yyyymmdd', today))
-        data = json.load(response)
-        for el in data:
-            self.curr_list.append(el['cc'])
+        if self.check_response(self.FOR_CURR_LIST.replace('yyyymmdd', today)):
+            response = requests.get(self.FOR_CURR_LIST.replace('yyyymmdd', today))
+            data = response.json()
+            for el in data:
+                self.curr_list.append(el['cc'])
+            return True
+        else:
+            return False
 
     def check_date(self, date):
         today = str(datetime.now().date()).replace('-', '')
@@ -53,33 +58,58 @@ class SiteRequest(object):
             return False
 
     def get_user_data(self, num):
-        self.create_curr_list()
-        print('Please enter the currency code. Please input the currency code according the list below:')
-        for el in self.curr_list:
-            print(f'| {el} |', end='')
-        print('\n')
-        currency_code = input('Please enter the currency code -> ')
-        if num == 1:
-            date_start = input('Please enter a date. Please use format YYYYMMDD -> ')
-            date_end = date_start
-        elif num == 2:
-            date_start = input('Please enter a start date. Please use format YYYYMMDD -> ')
-            date_end = input('Please enter an end date. Please use format YYYYMMDD -> ')
-        if self.site_parse(self.prepare_url(date_start, date_end, currency_code)):
-            if self.check_code(currency_code) and self.check_date(date_start) and self.check_date(date_end):
-                self.print_rates(self.site_parse(self.prepare_url(date_start, date_end, currency_code)))
+        if self.create_curr_list():
+            print('Please enter the currency code. Please input the currency code according the list below:')
+            for el in self.curr_list:
+                print(f'| {el} |', end='')
+            print('\n')
+            currency_code = input('Please enter the currency code -> ')
+            if num == 1:
+                date_start = input('Please enter a date. Please use format YYYYMMDD -> ')
+                date_end = date_start
+            elif num == 2:
+                date_start = input('Please enter a start date. Please use format YYYYMMDD -> ')
+                date_end = input('Please enter an end date. Please use format YYYYMMDD -> ')
+            data = self.site_parse(self.prepare_url(date_start, date_end, currency_code))
+            if data:
+                if self.check_code(currency_code) and self.check_date(date_start) and self.check_date(date_end):
+                    self.print_rates(data)
+                else:
+                    print('Input error! Please enter correct data')
             else:
-                print('Input error! Please enter correct data')
-        else:
-            print('Connection problem, try later!')
+                print(f'A problem has been occurred! The status code is '
+                    f'{self.response_code(prepare_url(date_start, date_end, currency_code))}. Please check it!')
 
     def site_parse(self, active_url):
-        response = urllib.request.urlopen(active_url)
-        if response.status == 200:
-            data = json.load(response)
+        if self.check_response(active_url):
+            response = requests.get(active_url)
+            data = response.json()
             return data
         else:
-            return None
+            return False
+
+    def check_response(self, active_url):
+        # print('=== Checking response! ===')
+        try:
+            response = requests.get(active_url)
+            response.raise_for_status()
+        except HTTPError as http_error:
+            print('==========================================    ERROR   ===========================================')
+            print(f'HTTP error occurred: {http_error}')
+            print('==========================================    *****   ===========================================')
+            return False
+        except Exception as error:
+            print('==========================================    ERROR   ===========================================')
+            print(f'Not HTTP error occurred: {error}. \nPlease check how to repair it!')
+            print('==========================================    *****   ===========================================')
+
+            return False
+        else:
+            # print(f'Successful response!')
+            return True
+
+    def responce_code(self, active_url):
+        return requests.get(active_url)
 
     def print_rates(self, data):
         for el in data:
@@ -106,7 +136,9 @@ class SiteRequest(object):
 
     @staticmethod
     def menu():
+        print('===========================================    MENU   ===========================================')
         print('|| Currency rate for date: enter "1" || Currency rate for period: enter "2" || Exit: enter "0" ||')
+        print('===========================================    ****   ===========================================')
         try:
             command = int(input('Please enter the command:'))
             return command
