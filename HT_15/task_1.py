@@ -3,16 +3,15 @@
 # доменів з усіма відповідними колонками - доменів там буде десятки тисяч (звичайно ураховуючи пагінацію).
 # Всі отримані значення зберегти в CSV файл.
 
-import requests
-from bs4 import BeautifulSoup
 import csv
 import random
 import time
+from bs4 import BeautifulSoup
+import requests
 
 
 class SiteParser(object):
     BASE_URL = 'https://www.expireddomains.net/godaddy-closeout-domains/'
-    OTHER_URL = 'https://www.w3schools.com/cssref/css_selectors.php'
     FILE_PATH = 'domains.csv'
     headers = dict()
     user_agents = [
@@ -38,21 +37,19 @@ class SiteParser(object):
     accept_encoding = 'gzip, deflate, sdch'
 
     def headers_make(self):
-        rnd = random.randint(0, len(self.user_agents) - 1)
-        self.headers['User-Agent'] = self.user_agents[rnd]
+        self.headers['User-Agent'] = self.user_agents[random.randint(0, len(self.user_agents) - 1)]
         self.headers['Accept'] = self.accept
         self.headers['Accept-Encoding'] = self.accept_encoding
-        rnd = random.randint(0, len(self.accept_languages) - 1)
-        self.headers['Accept-Language'] = self.accept_languages[rnd]
-        rnd_time = random.randint(0, 5)
-        time.sleep(rnd_time)
+        self.headers['Accept-Language'] = self.accept_languages[random.randint(0, len(self.accept_languages) - 1)]
+
         return self.headers
 
     def site_parse(self):
-        dct = dict()
-        lst = []
+        domain_data = dict()
+        domain_list = []
         session = requests.Session()
         for page in range(12):
+            time.sleep(random.randint(0, 5))
             if not page:
                 result = session.get(self.BASE_URL, headers=self.headers_make())
             else:
@@ -61,24 +58,24 @@ class SiteParser(object):
             soup = BeautifulSoup(result.content, 'lxml')
             data = soup.select('tbody tr')
             for el in data:
-                dct['domain'] = el.select_one('td.field_domain').text
-                dct['bl'] = el.select_one('td.field_bl').text
-                dct['domainpop'] = el.select_one('td.field_domainpop').text
-                dct['abirth'] = el.select_one('td.field_abirth').text
-                dct['aentries'] = el.select_one('td.field_aentries').text
-                dct['dmoz'] = el.select_one('td.field_dmoz').text
-                dct['statuscom'] = el.select_one('td.field_statuscom').text
-                dct['statusnet'] = el.select_one('td.field_statusnet').text
-                dct['statusorg'] = el.select_one('td.field_statusorg').text
-                dct['statusde'] = el.select_one('td.field_statusde').text
-                dct['statustld_registered'] = el.select_one('td.field_statustld_registered').text
-                dct['traffic'] = el.select_one('td.field_traffic').text
-                dct['valuation'] = el.select_one('td.field_valuation').text
-                dct['price'] = el.select_one('td.field_price').text
-                lst.append(dct.copy())
-                print(f'{len(lst)} URLs parsed and added to file!')
-                dct.clear()
-        return lst
+                domain_data['domain'] = el.select_one('td.field_domain').text
+                domain_data['bl'] = el.select_one('td.field_bl').text
+                domain_data['domainpop'] = el.select_one('td.field_domainpop').text
+                domain_data['abirth'] = el.select_one('td.field_abirth').text
+                domain_data['aentries'] = el.select_one('td.field_aentries').text
+                domain_data['dmoz'] = el.select_one('td.field_dmoz').text
+                domain_data['statuscom'] = el.select_one('td.field_statuscom').text
+                domain_data['statusnet'] = el.select_one('td.field_statusnet').text
+                domain_data['statusorg'] = el.select_one('td.field_statusorg').text
+                domain_data['statusde'] = el.select_one('td.field_statusde').text
+                domain_data['statustld_registered'] = el.select_one('td.field_statustld_registered').text
+                domain_data['traffic'] = el.select_one('td.field_traffic').text
+                domain_data['valuation'] = el.select_one('td.field_valuation').text
+                domain_data['price'] = el.select_one('td.field_price').text
+                domain_list.append(domain_data.copy())
+                print(f'{len(domain_list)} URLs parsed and added to file!')
+                domain_data.clear()
+        return domain_list
 
     def save_to_csv(self, results):
         with open(self.FILE_PATH, 'w', encoding="utf-8", newline='') as file:

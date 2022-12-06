@@ -1,12 +1,17 @@
 import csv
 import sqlite3
-import rozetka_api
 
 
 class CsvOperations(object):
 
     def __init__(self, path):
         self.path = path
+        conn = sqlite3.connect('rozetka.db')
+        cursor = conn.cursor()
+        cursor.execute('''DELETE FROM PRODUCTS''')
+        cursor.execute('''UPDATE `sqlite_sequence` SET `seq` = 0 WHERE `name` = 'PRODUCTS';''')
+        conn.commit()
+        conn.close()
 
     def read_csv(self):
         """According to the task requirements reading from a file and searching column with 'ID' name"""
