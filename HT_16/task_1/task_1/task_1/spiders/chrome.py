@@ -17,7 +17,7 @@ class ChromeSpider(scrapy.Spider):
             yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
-        '''Parse first XML page'''
+        """Parse first XML page"""
         data = xmltodict.parse(response.body)
         xml_urls = []
         for element in data.get('sitemapindex').get('sitemap'):
@@ -26,7 +26,7 @@ class ChromeSpider(scrapy.Spider):
             yield scrapy.Request(response.urljoin(url), callback=self.parse_loc)
 
     def parse_loc(self, response):
-        '''Parse <loc> pages'''
+        """Parse <loc> pages"""
         data = xmltodict.parse(response.body)
         links = []
         for element in data.get('urlset').get('url'):
@@ -34,8 +34,8 @@ class ChromeSpider(scrapy.Spider):
         for link in links:
             yield scrapy.Request(response.urljoin(link), callback=self.parse_page)
 
-    '''Parse extension pages'''
     def parse_page(self, response):
+        """Parse extension pages"""
         data = response.css('html')
         for page in data:
             extension_id = page.css('head link::attr(href)').getall()[-1].split('/')[-1].split('?')[0]
