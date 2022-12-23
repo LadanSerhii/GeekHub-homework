@@ -1,7 +1,5 @@
 import scrapy
-import urllib
 import xmltodict
-
 
 
 class ChromeSpider(scrapy.Spider):

@@ -13,7 +13,7 @@ class RozetkaSpider(scrapy.Spider):
 
     def start_requests(self):
         urls = [
-            self.base_url + self.category + '/' + self.category_code + '/',
+            f'{self.base_url}{self.category}/{self.category_code}/',
         ]
         for url in urls:
             yield scrapy.Request(url=url, callback=self.parse)
@@ -39,7 +39,6 @@ class RozetkaSpider(scrapy.Spider):
         model = response.css('h1.product__title::text').get().strip()
         price = response.css('p.product-prices__big::text').get().replace(u'\xa0', '').replace(' ', '')
         rank_list = response.css('div.product__rating stop::attr(offset)').getall()
-
         if rank_list:
             rank = 0
             for index in range(0, len(rank_list), 2):
@@ -48,6 +47,8 @@ class RozetkaSpider(scrapy.Spider):
                 rank = round(rank, 4)
             else:
                 rank = 'No Rank'
+        else:
+            rank = 'No Rank'
         yield {
             'Category': category,
             'Brand': brand,
