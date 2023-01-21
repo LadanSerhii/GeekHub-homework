@@ -1,0 +1,13 @@
+{% extends 'index.html' %}
+
+{% block content %}
+
+<h1>ID: {{ object.item_id }}</h1>
+<H2>{{ object.title }}</H2>
+<p>Old price: {{ object.old_price }}</p>
+<p>Current price: {{ object.current_price }}</p>
+<a href={{ object.href }}>Product on the Rozetka website</a>
+<p>Brand: {{ object.brand }}</p>
+<p>Category: {{ object.category }}</p>
+
+{% endblock %}

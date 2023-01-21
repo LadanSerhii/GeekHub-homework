@@ -1,0 +1,15 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<H1>The page of the list of products</H1>
+<p>
+</p>
+    <ul>
+        {% for element in object_list %}
+            <li>Product: <a href={{ element.get_absolute_url }}>{{ element.title }}</a></li>
+            <li>Current Price: {{ element.current_price }} </li>
+            <hr>
+        {% endfor %}
+    </ul>
+
+{% endblock content %}
