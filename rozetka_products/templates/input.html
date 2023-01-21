@@ -2,7 +2,7 @@
 
 {% block content %}
 <p>Please enter the product IDs, sepatared by comma</p>
-<form method="POST">
+<form action="." method="POST">
     {% csrf_token %}
     {{ form.as_p }}
     <br>

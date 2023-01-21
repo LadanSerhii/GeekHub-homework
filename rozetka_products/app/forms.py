@@ -1,9 +1,8 @@
 from django import forms
+from .models import Product, ProductList
 
-
-from .models import Product, InputField
 
 class InputForm(forms.ModelForm):
     class Meta:
-        model = InputField
+        model = ProductList
         fields = ['product_list',]

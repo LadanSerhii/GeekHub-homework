@@ -1,7 +1,11 @@
 from django.db import models
 
-class InputField(models.Model):
+
+class ProductList(models.Model):
     product_list = models.TextField()
+
+    # def get_product_list(self):
+    #     return selt.product_list
 
 class Product(models.Model):
     item_id = models.CharField(max_length=20, default='No id')

@@ -1,22 +1,26 @@
-from django.http import HttpResponse
-from django.shortcuts import render
-from .models import Product
+import os
 import subprocess
 
-
+from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404
+from .models import Product, ProductList
 from .forms import InputForm
 
-def add_products(request):
-    output = "Welcome on board! Let's make Rozetka products page!"
-    form = InputForm(request.POST or None)
-    if form.is_valid():
-        form.save()
 
+def add_products(request):
+    if request.method == 'POST':
+        form = InputForm(request.POST)
+        if form.is_valid():
+            form.save()
+            form = InputForm()
+            process =  subprocess.run(["python", 'scraper.py'], stdout=subprocess.PIPE)
+    else:
+        form = InputForm()
     context = {
         'form': form,
     }
-    process = subprocess.run(["python", "scrape/task_1.py"], stdout=subprocess.PIPE)
     return render(request, 'input.html', context)
+
 
 def products(request):
     queryset = Product.objects.all()
@@ -26,7 +30,7 @@ def products(request):
     return render(request, 'products.html', product_context)
 
 def single_product_view(request, product_id):
-    obj = Product.objects.get(id=product_id)
+    obj = Product.objects.get_object_or_404(id=product_id)
     product_data = {
         'object': obj
     }
