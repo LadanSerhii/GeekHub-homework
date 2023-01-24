@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+{% include 'navbar.html' %}
+{% block content %}
+<H1 size="12">The main page to input the list of Rozetka IDs</H1>
+
+<div class="cart">
+    {% with total_items=cart|length %}
+        {% if cart|length > 0 %}
+            Ваша корзина:
+            <a href="{% url "CartDetail" %}">
+                {{ total_items }} тов. {{ cart.get_total_price }} руб.
+            </a>
+         {% else %}
+              Корзина пустая
+        {% endif %}
+    {% endwith %}
+</div>
+
+
+
+
+
+{% endblock content %}
+
+</body>
+</html>

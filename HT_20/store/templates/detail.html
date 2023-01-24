@@ -1,0 +1,20 @@
+{% extends 'index.html' %}
+
+{% block content %}
+
+<h1>Product ID: {{ product.item_id }}</h1>
+<H2>{{ product.title }}</H2>
+<p>Old price: {{ product.old_price }}</p>
+<p>Current price: {{ product.current_price }}</p>
+<a href = {{ product.href }}>Product on the Rozetka website</a>
+<p>Brand: {{ product.brand }}</p>
+<p>Category: {{ product.category }}</p>
+
+<p> Current price: {{ product.current_price }} </p>
+<form action="{% url "cart_add" product.id %}" method="post">
+    {{ cart_product_form }}
+    {% csrf_token %}
+    <input type="submit" value="Add to cart">
+</form>
+
+{% endblock %}
