@@ -1,5 +1,7 @@
 from decimal import Decimal
+
 from django.conf import settings
+
 from app.models import Product
 
 
@@ -52,3 +54,4 @@ class Cart(object):
     def clear(self):
         del self.session[settings.CART_SESSION_ID]
         self.session.modified = True
+
