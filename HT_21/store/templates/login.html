@@ -1,0 +1,20 @@
+{% extends 'index.html' %}
+{% block content %}
+
+
+<form action="{% url 'user_login' %}" method="POST">
+  {% csrf_token %}
+  {% if messages %}
+  {% for message in messages %}
+  <p>{{ message }}</p>
+  {% endfor %}
+  {% endif %}
+
+  <label>Username</label>>
+  <input type='text' name='username' placeholder="username">
+  <label>Password</label>>
+  <input type='password' name='password' placeholder="password">
+  <button type="submit">Login</button>
+</form>
+
+{% endblock %}
