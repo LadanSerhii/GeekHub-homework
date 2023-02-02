@@ -75,6 +75,7 @@ def user_login(request):
 def user_logout(request):
     if request.method == "POST":
         logout(request)
+        return redirect('products')
     return render(request, 'logout.html', {})
 
 
