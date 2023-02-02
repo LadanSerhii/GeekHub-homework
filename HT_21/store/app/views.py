@@ -3,6 +3,7 @@ import subprocess
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.views.decorators.http import require_POST
 
 from .models import Product, ProductCategory
 from .forms import InputForm, ProductForm
@@ -96,7 +97,7 @@ def create_view(request):
         product_form = ProductForm(request.POST)
         if product_form.is_valid():
             product_form.save()
-            return redirect('products')
+            return redirect('detail.html')
         context = {
             'product_form': product_form,
         }
@@ -108,12 +109,15 @@ def create_view(request):
 
 def update_view(request, product_id):
     if request.user.is_superuser:
-        product = get_object_or_404(Product, id=product_id)
-        product_form = ProductForm(request.POST, instance=product)
-        if product_form.is_valid():
-            product_form.save()
+        product = Product.objects.get(id=product_id)
+        if request.method == 'POST':
+            product_form = ProductForm(request.POST, instance=product)
+            if product_form.is_valid():
+                product_form.save()
+                return redirect('products')
+        else:
+            product_form = ProductForm(instance=product)
         context = {
-            'product': product,
             'product_form': product_form,
         }
         return render(request, 'update_detail.html', context)

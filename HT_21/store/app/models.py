@@ -23,4 +23,7 @@ class ProductCategory(models.Model):
     category_id = models.CharField(max_length=30, default='No category id')
     category_name = models.CharField(max_length=30, default='No category')
 
+    def __str__(self):
+        return self.category_name
+
 

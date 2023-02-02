@@ -17,5 +17,7 @@
             <hr>
         {% endfor %}
     </ul>
+{% if request.user.is_superuser %}
 <a href="{% url 'create' %}"> Create a new product</a>
+{% endif %}
 {% endblock content %}

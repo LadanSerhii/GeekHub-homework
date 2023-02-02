@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<form method="POST" action="{% url 'update' product.id %}" >
+<form method="POST" action="" >
     {% csrf_token %}
     <p>Product ID: {{ product_form.item_id }}</p>
     <p>Title {{ product_form.title }}</p>
