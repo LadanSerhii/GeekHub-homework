@@ -7,7 +7,7 @@ class ProductList(models.Model):
 
 class Product(models.Model):
     item_id = models.CharField(max_length=20, default='No id')
-    title = models.CharField(max_length=30, default='No title')
+    title = models.CharField(max_length=200, default='No title')
     old_price = models.FloatField(default=0)
     current_price = models.FloatField(default=0)
     href = models.CharField(max_length=50, default='No href')
