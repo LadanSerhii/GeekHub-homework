@@ -1,0 +1,13 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<p>Please enter the product IDs, sepatared by comma</p>
+<form action="." method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <br>
+    <input type="submit" value="Scrape!">
+</form>
+
+{% endblock content %}
+

@@ -1,0 +1,18 @@
+{% extends 'index.html' %}
+
+{% block content %}
+
+<form method="POST" action="" >
+    {% csrf_token %}
+    <p>Product ID: {{ product_form.item_id }}</p>
+    <p>Title {{ product_form.title }}</p>
+    <p>Old price: {{ product_form.old_price }}</p>
+    <p>Current price: {{ product_form.current_price }}</p>
+    <p>Brand: {{ product_form.brand }}</p>
+    <p>Category ID: {{ product_form.category }}</p>
+    <p>Product on the Rozetka website: {{ product_form.href }}</p>
+    <p>Product Category: {{ product_form.product_category }}</p>
+    <input type="submit" value="Update">
+</form>
+
+{% endblock %}
