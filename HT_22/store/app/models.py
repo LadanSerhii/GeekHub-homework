@@ -18,6 +18,9 @@ class Product(models.Model):
     def get_absolute_url(self):
         return f'/products/{self.id}/'
 
+    def __str__(self):
+        return self.title
+
 
 class ProductCategory(models.Model):
     category_id = models.CharField(max_length=30, default='No category id')

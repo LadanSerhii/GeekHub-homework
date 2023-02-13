@@ -17,11 +17,33 @@
 
 {% if product.current_price != 0.0 %}
     {% if request.user.is_authenticated %}
-<form action="{% url 'cart_add' product.id %}" method="post">
-    {{ cart_product_form }}
-    {% csrf_token %}
-    <input type="submit" value="Add to cart">
-</form>
+
+    <input id="productForm{{ product.id }}" type="number" value="1" min="1" max="20">
+    <button id="productAdd{{ product.id }}" data-product-id="{{ product.id }}">Add to cart with AJAX</button>
+<script>
+    $(document).ready(function (){
+
+        $("#productAdd{{ product.id }}").on("click", function (){
+            $.ajax({
+                url:"{% url 'ajax_cart' %}",
+                type:'POST',
+                data: {
+                    product_id: this.dataset.productId,
+                    product_quantity: $('#productForm{{ product.id }}').val(),
+                },
+                dataType: "json",
+                headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                success: function() {
+                    alert('Added to cart!');
+                },
+                error: function(){
+                    alert('Error occurred!');
+                }
+            });
+        });
+
+    });
+</script>
     {% endif %}
 {% endif %}
 

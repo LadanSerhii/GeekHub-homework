@@ -1,3 +1,5 @@
+import json
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.decorators import login_required
@@ -17,7 +19,11 @@ def cart_add(request, product_id):
     form = CartAddProductForm(request.POST)
     if form.is_valid():
         cart.add(product=product, quantity=form.cleaned_data['quantity'], update_quantity=form.cleaned_data['update'])
+    context = {
+        'cart': cart,
+    }
     return redirect('cart_detail')
+    # return render(request, 'cart.html', context)
 
 
 @login_required
@@ -41,29 +47,46 @@ def cart_detail(request):
 
 
 @login_required
-@require_GET
+# @require_GET
 def cart_clear(request):
     cart = Cart(request)
     cart.clear()
     return redirect('cart_detail')
 
 
-class CartClearView(View):
+class CartView(View):
     template_name = 'cart.html'
 
-    def get(self, *args, **kwargs):
-        text = 'It is text for testing!'
-        if self.request.is_ajax():
-            return JsonResponse({'text': text}, status=200)
-        return redirect('cart_detail')
+    def delete(self, request):
+        cart = Cart(self.request)
+        cart.clear()
+        return JsonResponse({"success": True}, status=204)
+
+    def patch(self, request):
+        data = json.loads(request.body)
+        cart = Cart(request)
+        product_id = data['product_id']
+        cart.remove_by_id(product_id)
+        return JsonResponse({
+            "success": True,
+            "cart_total_price": str(cart.get_total_price()),
+        }, status=200)
 
     def post(self, request):
-        if self.request.method == "POST" and self.request.is_ajax():
-            cart = Cart(self.request)
-            cart.clear()
-            form = self.form_class(self.request.POST)
-            form.save()
-            return JsonResponse({"success": True}, status=200)
-        return JsonResponse({"success": False}, status=400)
+        cart = Cart(request)
+        product_id = request.POST.get('product_id')
+        product_quantity = int(request.POST.get('product_quantity'))
+        product = get_object_or_404(Product, id=product_id)
+        cart.add(product, product_quantity, True)
+        cart.save()
+        return JsonResponse({
+            "success": True,
+            "product_quantity": product_quantity,
+            "product_total_price": str(product.current_price * product_quantity),
+            "cart_total_price": str(cart.get_total_price()),
+        }, status=200)
+
+
+
 
 

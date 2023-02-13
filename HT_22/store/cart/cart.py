@@ -34,6 +34,17 @@ class Cart(object):
             del self.cart[product_id]
             self.save()
 
+    def remove_by_id(self, product_id):
+        if product_id in self.cart:
+            del self.cart[product_id]
+            self.save()
+
+    def get_quantity_by_id(self, product_id):
+        if product_id in self.cart.keys():
+            return self.cart[product_id]['quantity']
+        else:
+            return 0
+
     def __iter__(self):
         product_ids = self.cart.keys()
         products = Product.objects.filter(id__in=product_ids)
@@ -54,4 +65,10 @@ class Cart(object):
     def clear(self):
         del self.session[settings.CART_SESSION_ID]
         self.session.modified = True
+
+    def cart_list(self):
+        product_list = []
+        for item in self.cart:
+            product_list.append(item)
+        return str(product_list)
 
