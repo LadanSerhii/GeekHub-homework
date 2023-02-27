@@ -1,0 +1,12 @@
+<nav>
+    <a href={% url 'add_products' %}>Home</a>
+    <a href={% url 'products' %}>All products</a>
+    <a href={% url 'cart_detail' %}>Cart</a>
+    <hr>
+    {% if not request.user.is_authenticated %}
+        <p><a href=/login/> Log in</a></p>
+    {% else %}
+        <p>Welcome {{ request.user.username }}<a href=/logout/> Log out</a></p>
+    {% endif %}
+    <hr>
+</nav>

@@ -1,0 +1,13 @@
+{% extends 'index.html' %}
+{% block content %}
+
+<form action="{% url 'user_logout' %}" method="POST">
+  {% csrf_token %}
+  {% if error %}
+  <p>{{ error }}</p>
+  {% endif %}
+  <p>You are going to be logged out. Are you sure?</p>
+  <button type="submit">Yes, Logout</button>
+</form>
+
+{% endblock %}

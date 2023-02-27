@@ -1,0 +1,117 @@
+{% extends 'index.html' %}
+
+{% block title %}
+    Your cart
+{% endblock %}
+
+{% block content %}
+<h1>Your cart</h1>
+{% with total_items=cart|length %}
+{% if cart|length > 0 %}
+
+{% for item in cart %}
+{% with product=item.product %}
+<span id="cartContent">
+<table>
+<tr id="product{{ product.id }}">
+      <td> {{ product.title }} </td>
+      <td> Price: {{ product.current_price }} </td>
+      <td> Quantity: </td>
+      <td>
+          <form method="POST">
+              <input id="productForm{{ product.id }}" type="number" value="{{ item.quantity }}" min="1" max="20">
+              {{ item.update_quantity_form.update }}
+              {% csrf_token %}
+          </form>
+      </td>
+        <td><button id="productUpdate{{ product.id }}" data-product-id="{{ product.id }}">Update cart with AJAX</button></td>
+        <td> Total: <span id="productTotalPrice{{ product.id }}"> {{ item.total_price }} </span></td>
+        <td><button id="productRemove{{ product.id }}" data-product-id="{{ product.id }}">Delete from cart with AJAX</button></td>
+</tr>
+</table>
+<script>
+    $(document).ready(function (){
+
+        $("#productUpdate{{ product.id }}").on("click", function (){
+            $.ajax({
+                url:"{% url 'ajax_cart' %}",
+                type:'POST',
+                data: {
+                    product_id: this.dataset.productId,
+                    product_quantity: $('#productForm{{ product.id }}').val(),
+                },
+                dataType: "json",
+                headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                success: function(response) {
+                     $("#productTotalPrice{{ product.id }}").html(response.product_total_price);
+                     $("#totalPrice").html(response.cart_total_price);
+                },
+                error: function(){
+                    alert('Error occurred!');
+                }
+            });
+        });
+
+    });
+</script>
+<script>
+    $(document).ready(function (){
+
+        $("#productRemove{{ product.id }}").on("click", function (){
+            $.ajax({
+                url:"{% url 'ajax_cart' %}",
+                type:'PATCH',
+                data: JSON.stringify({
+                    product_id: this.dataset.productId,
+                }),
+                contentType: 'application/json',
+                dataType: "json",
+                headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                success: function(response) {
+                    // alert('It works!' );
+                    $("#product{{ product.id }}").remove();
+                    $("#totalPrice").html(response.cart_total_price);
+                },
+                error: function(){
+                    alert('Error occurred!');
+                }
+            });
+        });
+
+    });
+</script>
+{% endwith %}
+{% endfor %}
+    <div> Total:
+    <span id="totalPrice"> {{ cart.get_total_price }} </span>
+    </div>
+    <button class="clear" id="cartClearBtn">Clear cart with AJAX</button>
+</span>
+<script>
+    $(document).ready(function (){
+
+        $("#cartClearBtn").on("click", function (){
+            $.ajax({
+                url:"{% url 'ajax_cart' %}",
+                type:'DELETE',
+                dataType: "json",
+                headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                success: function() {
+                    // alert('It works!');
+                    $("#cartContent").html('<div>Your cart is empty</div>');
+                },
+                error: function(){
+                    alert('Error occurred!');
+                }
+            });
+        });
+
+    });
+</script>
+
+{% else %}
+<div>Your cart is empty</div>
+{% endif %}
+{% endwith %}
+{% endblock %}
+

@@ -1,0 +1,23 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<H1>The page of the list of products</H1>
+  {% if messages %}
+  {% for message in messages %}
+  <p>{{ message }}</p>
+  {% endfor %}
+{% endif %}
+<div>
+    {% for category in all_categories %}<a href="{% url 'category_filter' category.id %}">| {{ category.category_name }} |</a> {% endfor %}
+</div>
+    <ul>
+        {% for product in all_products %}
+            <li>Product: <a href={{ product.get_absolute_url }}>{{ product.title }}</a></li>
+            <li>Current Price: {{ product.current_price }} </li>
+            <hr>
+        {% endfor %}
+    </ul>
+{% if request.user.is_superuser %}
+<a href="{% url 'create' %}"> Create a new product</a>
+{% endif %}
+{% endblock content %}

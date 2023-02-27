@@ -1,0 +1,62 @@
+{% extends 'index.html' %}
+
+{% block content %}
+
+<H1>{{ product.title }}</H1>
+<p>Old price: {{ product.old_price }}</p>
+{% if product.current_price == 0.0 %}
+    <p>Out of stock!</p>
+{% else %}
+    <p>Current price: {{ product.current_price }}</p>
+{% endif %}
+<a href = {{ product.href }}>Product on the Rozetka website</a>
+<p>Brand: {{ product.brand }}</p>
+<p> Category ID: {{ product.category }}</p>
+<p> Category: {{ product.product_category.category_name }} </p>
+<p> Current price: {{ product.current_price }} </p>
+
+{% if product.current_price != 0.0 %}
+    {% if request.user.is_authenticated %}
+
+    <input id="productForm{{ product.id }}" type="number" value="1" min="1" max="20">
+    <button id="productAdd{{ product.id }}" data-product-id="{{ product.id }}">Add to cart with AJAX</button>
+<script>
+    $(document).ready(function (){
+
+        $("#productAdd{{ product.id }}").on("click", function (){
+            $.ajax({
+                url:"{% url 'ajax_cart' %}",
+                type:'POST',
+                data: {
+                    product_id: this.dataset.productId,
+                    product_quantity: $('#productForm{{ product.id }}').val(),
+                },
+                dataType: "json",
+                headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                success: function() {
+                    alert('Added to cart!');
+                },
+                error: function(){
+                    alert('Error occurred!');
+                }
+            });
+        });
+
+    });
+</script>
+    {% endif %}
+{% endif %}
+
+{% if request.user.is_superuser %}
+<div>
+    <form action="{% url 'delete' product.id %}" method="POST">
+        {% csrf_token %}
+        <input type="submit" value="Delete">
+    </form>
+</div>
+<div>
+    <a href = "{% url 'update' product.id %}">Update product</a>
+</div>
+{% endif %}
+
+{% endblock %}
