@@ -1,7 +1,3 @@
-# import subprocess
-
-# 25165361,138685031,59013970,59036506,138684310,55599132,55598190
-
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout

@@ -18,31 +18,14 @@ def scrape_products():
 @app.task(name='get_product', queue='celery')
 def get_product(product_id):
     api = rozetka_api.RozetkaAPI()
-    try:
-        product = api.get_item_data(str(product_id))
-        if Product.objects.filter(item_id=product_id):
-            current_category = ProductCategory.objects.get(category_id=product['category'])
-            current_product = Product.objects.filter(item_id=product_id).update(
-                title=product['title'],
-                old_price=product['old_price'],
-                current_price=product['current_price'],
-                href=product['href'],
-                brand=product['brand'],
-                category=product['category'],
-                product_category=current_category,
-            )
-        else:
-            current_category = ProductCategory.objects.get(category_id=product['category'])
-            new_product = Product(
-                item_id=product_id,
-                title=product['title'],
-                old_price=product['old_price'],
-                current_price=product['current_price'],
-                href=product['href'],
-                brand=product['brand'],
-                category=product['category'],
-                product_category=current_category
-            )
-            new_product.save()
-    except Exception:
-        pass
+    product = api.get_item_data(str(product_id))
+    current_category = ProductCategory.objects.get(category_id=product['category'])
+    active_product, created = Product.objects.update_or_create(
+        title=product['title'],
+        old_price=product['old_price'],
+        current_price=product['current_price'],
+        href=product['href'],
+        brand=product['brand'],
+        category=product['category'],
+        product_category=current_category,
+    )
